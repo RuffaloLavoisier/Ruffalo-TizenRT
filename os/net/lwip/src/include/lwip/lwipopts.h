@@ -77,8 +77,10 @@
 
 #ifdef CONFIG_LWIP_DHCP_HOSTNAME
 #define LWIP_NETIF_HOSTNAME CONFIG_LWIP_DHCP_HOSTNAME
+#define LWIP_DHCP_HOSTNAME 1
 #else
 #define LWIP_NETIF_HOSTNAME 0
+#define LWIP_DHCP_HOSTNAME 0
 #endif
 
 #define LWIP_NETIF_API                  1
@@ -1029,6 +1031,12 @@
 #define DHCP_DEBUG	LWIP_DBG_ON
 #else
 #define DHCP_DEBUG	LWIP_DBG_OFF
+#endif
+
+#ifdef CONFIG_NET_DNS_DEBUG
+#define DNS_DEBUG LWIP_DBG_ON
+#else
+#define DNS_DEBUG LWIP_DBG_OFF
 #endif
 
 #ifdef CONFIG_NET_POLL_DEBUG

@@ -169,7 +169,7 @@ int _netdev_dhcpc_start(const char *intf)
 
 int _netdev_dhcpc_stop(const char *intf)
 {
-	struct in_addr in = { .s_addr = INADDR_NONE };
+	struct in_addr in = {.s_addr = INADDR_NONE};
 	struct netif *cnif;
 	cnif = _netdev_dhcp_dev(intf);
 	if (cnif == NULL) {
@@ -181,6 +181,27 @@ int _netdev_dhcpc_stop(const char *intf)
 	NET_LOGKV(TAG, "Release IP address (lwip)\n");
 
 	return OK;
+}
+
+int _netdev_dhcpc_sethostname(struct lwip_dhcp_msg *msg)
+{
+#ifdef CONFIG_LWIP_DHCP_HOSTNAME
+	/* it's blocked call. So it's ok to use local variable */
+	struct lwip_dhcpc_msg dmsg;
+	dmsg.netif = _netdev_dhcp_dev(msg->intf);
+	if (dmsg.netif == NULL) {
+		NET_LOGKE(TAG, "No network interface for dhcpc %s\n", msg->intf);
+		return ERROR;
+	}
+	dmsg.hostname = msg->hostname;
+
+	netifapi_dhcp_sethostname(dmsg.netif, (void *)&dmsg);
+
+	return 0;
+#else
+	NET_LOGKE(TAG, "Enable LWIP_DHCP_HOSTNAME\n");
+	return -1;
+#endif
 }
 #endif
 
@@ -405,6 +426,14 @@ static int lwip_func_ioctl(int s, int cmd, void *arg)
 		req->req_res = _netdev_dhcpc_stop((const char *)req->msg.dhcp.intf);
 		if (req->req_res != OK) {
 			NET_LOGKE(TAG, "Stop DHCP client failed %d\n", req->req_res);
+			goto errout;
+		}
+		ret = OK;
+		break;
+	case DHCPCSETHOSTNAME:
+		req->req_res = _netdev_dhcpc_sethostname(&req->msg.dhcp);
+		if (req->req_res != OK) {
+			NET_LOGKE(TAG, "Set dhcp host name failed %d\n", req->req_res);
 			goto errout;
 		}
 		ret = OK;

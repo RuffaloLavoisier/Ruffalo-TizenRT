@@ -616,14 +616,18 @@ def find_crash_point(log_file, elf):
                     is_app_crash = 1
                     print('\n\t[ Current location (PC) of assert ]')
                     format_output(result, "")
-                f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 4))
-                result1 = f.read()
-                f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 8))
-                result2 = f.read()
-                if '??' not in result and '$d' not in result:
-                    print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
-                    format_output(result1, "of (pc - 4)")
-                    format_output(result2, "of (pc - 8)")
+                if ((addr - 4) > 0x0):
+                    f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 4))
+                    result1 = f.read()
+                    if '??' not in result1 and '$d' not in result1:
+                        print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                        format_output(result1, "of (pc - 4)")
+                if ((addr - 8) > 0x0):
+                    f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 8))
+                    result2 = f.read()
+                    if '??' not in result2 and '$d' not in result2:
+                        print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                        format_output(result2, "of (pc - 8)")
 
     # Scenario when up_registerdump() is not present in dump logs, use g_assertpc value to give crash point
     else:
@@ -640,14 +644,18 @@ def find_crash_point(log_file, elf):
                     print('\n2. Crash point (PC or LR)')
                     print('\n\t[ Current location (PC) of assert ]')
                     format_output(result, "")
-                f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 4))
-                result1 = f.read()
-                f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 8))
-                result2 = f.read()
-                if '??' not in result and '$d' not in result:
-                    print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
-                    format_output(result1, "of (pc - 4)")
-                    format_output(result2, "of (pc - 8)")
+                if ((addr - 4) > 0x0):
+                    f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 4))
+                    result1 = f.read()
+                    if '??' not in result1 and '$d' not in result1:
+                        print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                        format_output(result1, "of (pc - 4)")
+                if ((addr - 8) > 0x0):
+                    f = os.popen('arm-none-eabi-addr2line -a -f -e ' + BIN_PATH + app_name[app_idx] + '_dbg ' + hex(addr - 8))
+                    result2 = f.read()
+                    if '??' not in result2 and '$d' not in result2:
+                        print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                        format_output(result2, "of (pc - 8)")
 
     # Check for lr & pc values in kernel text address range
     if (not is_app_crash) and (pc_value != 00000000):
@@ -672,14 +680,18 @@ def find_crash_point(log_file, elf):
                 is_kernel_crash = 1
                 print('\n\t[ Current location (PC) of assert ]')
                 format_output(result, "")
-            f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(pc_value - 4))
-            result1 = f.read()
-            f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(pc_value - 8))
-            result2 = f.read()
-            if '??' not in result and '$d' not in result:
-                print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
-                format_output(result1, "of (pc - 4)")
-                format_output(result2, "of (pc - 8)")
+            if ((pc_value - 4) > 0x0):
+                f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(pc_value - 4))
+                result1 = f.read()
+                if '??' not in result1 and '$d' not in result1:
+                    print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                    format_output(result1, "of (pc - 4)")
+            if ((pc_value - 8) > 0x0):
+                f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(pc_value - 8))
+                result2 = f.read()
+                if '??' not in result2 and '$d' not in result2:
+                    print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                    format_output(result2, "of (pc - 8)")
 
     # Scenario when up_registerdump() is not present in dump logs, use g_assertpc value to give crash point
     if (pc_value == 00000000 and g_assertpc):
@@ -694,14 +706,18 @@ def find_crash_point(log_file, elf):
                 print('\n2. Crash point (PC or LR)')
                 print('\n\t[ Current location (PC) of assert ]')
                 format_output(result, "")
-            f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(g_assertpc - 4))
-            result1 = f.read()
-            f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(g_assertpc - 8))
-            result2 = f.read()
-            if '??' not in result and '$d' not in result:
-                print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
-                format_output(result1, "of (pc - 4)")
-                format_output(result2, "of (pc - 8)")
+            if ((g_assertpc - 4) > 0x0):
+                f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(g_assertpc - 4))
+                result1 = f.read()
+                if '??' not in result1 and '$d' not in result1:
+                    print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                    format_output(result1, "of (pc - 4)")
+            if ((g_assertpc - 8) > 0x0):
+                f = os.popen('arm-none-eabi-addr2line -a -f -e' + elf + ' ' + hex(g_assertpc - 8))
+                result2 = f.read()
+                if '??' not in result2 and '$d' not in result2:
+                    print('\n\t[ Exact crash point might be -4 or -8 bytes from the PC ]')
+                    format_output(result2, "of (pc - 8)")
 
     if (not is_app_crash) and (not is_kernel_crash):
         print('1. Crash Binary             : NA')
@@ -727,13 +743,60 @@ def find_crash_point(log_file, elf):
 
     # It displays the debug symbols corresponding to all the addresses in the kernel and application text address range
     print('\nStack_address\t Symbol_address\t Symbol location  Symbol_name\t\tFile_name')
-    os.system("python ../debug/debugsymbolviewer.py " + log_file + " " + str(g_app_idx) + " 0")
+    os.system("python3 ../debug/debugsymbolviewer.py " + log_file + " " + str(g_app_idx) + " 0")
 
     print('\n4. Miscellaneous information:')
     # It displays the debug symbols corresponding to all the wrong sp addresses (if any)
     # The last argument to debugsymbolviewer specifies whether or not to check for wrong stack pointer addresses
-    os.system("python ../debug/debugsymbolviewer.py " + log_file + " " + str(g_app_idx) + " 1")
+    os.system("python3 ../debug/debugsymbolviewer.py " + log_file + " " + str(g_app_idx) + " 1")
     print('-----------------------------------------------------------------------------------------')
+
+# Function to format logs and delete the timestamp (format-[xxxxxxxxx]) if it consists of timestamp at the start of each log line
+def format_log_file(log_file):
+
+	# Delete unwanted logs (if any) and timestamp at the start of each line
+	with open(log_file, "r") as f:
+		data = f.readlines()
+	with open(log_file, "w") as f:
+		trunc = True # False if log line is to be retained, True otherwise
+		for line in data:
+			# Truncate logs after first crash dump: up_assert
+			if ('up_assert: Assertion failed at file:' in line) and (trunc == False):
+				break
+			# Truncate logs before first crash dump: up_assert
+			if 'up_assert: Assertion failed at file:' in line:
+				trunc = False
+			if trunc:
+				# Do not write line and move to the next line
+				continue
+
+			delete_idx = 0
+			# Timestamp present if line starts with '['
+			if line[0] == '[':
+				for idx in range(0, len(line)):
+					if ']' == line[idx]:
+						delete_idx = idx + 1
+						break
+			if line[delete_idx] == ' ':	# Check for trailing white spaces
+				delete_idx = delete_idx + 1
+			line = line[delete_idx:]
+			f.write(line)
+
+	# Check for invalid format after above formatting
+	with open(log_file, "r") as f:
+		data = f.readlines()
+		for line in data:
+			if 'up_assert:' in line:
+				if line[0] != 'u':
+					for idx in range(0, len(line)):
+						if 'u' == line[idx]:
+							delete_idx = idx
+							break
+					correctFormatString = line[delete_idx:]
+					print ("\n\t- Below log format is not supported in TRAP")
+					print ('\t\t-{0}\t- Instead, supported log format in TRAP is as follows:'.format(line))
+					print ("\t\t-{0}\n\tKindly modify the log file as per accepted format.\n".format(correctFormatString))
+					sys.exit(1)
 
 def usage():
 	print('*************************************************************')
@@ -750,17 +813,17 @@ def usage():
 	print('')
 	print('syntax :')
 	print('--------')
-	print('python %s -r Filename_ramBaseAddr_ramEndAddr.bin -G <Gdb path> -N < NM path> ' % sys.argv[0])
+	print('python3 %s -r Filename_ramBaseAddr_ramEndAddr.bin -G <Gdb path> -N < NM path> ' % sys.argv[0])
 	print('')
 	print('I assume, gdb and nm tool exist in your linux machine like /usr/bin/gdb and /usr/bin/nm, so hard coded this path inside script')
 	print('')
 	print('Below example if you give dump file as path: ')
 	print('--------------------------------------------')
-	print('python ramdumpParser.py -r build/output/bin/ramdump_0x4a0000_0x6a0000.bin')
+	print('python3 ramdumpParser.py -r build/output/bin/ramdump_0x4a0000_0x6a0000.bin')
 	print('')
 	print('Below example if you give simple assert log file as path: ')
 	print('---------------------------------------------------------')
-	print('python ramdumpParser.py -r log.txt ')
+	print('python3 ramdumpParser.py -r log.txt ')
 	print('')
 	print('')
 	print('Note:')
@@ -769,7 +832,7 @@ def usage():
 	print('')
 	print('If you do not have gdb and nm path set, please pass the path as below')
 	print('')
-	print('python ramdumpParser.py -r /build/bin/ramdump_0x4a0000_0x6a0000.bin -G <your_gdb_path> -N <your_nm_path>')
+	print('python3 ramdumpParser.py -r /build/bin/ramdump_0x4a0000_0x6a0000.bin -G <your_gdb_path> -N <your_nm_path>')
 	print('')
 	print('')
 	print('*************************************************************')
@@ -820,6 +883,37 @@ def main():
 				ext = (line.split("=")[1].strip())
 	elf = (BIN_PATH + 'tinyara' + ext)
 
+	if not log_file and not dump_file:
+		print('Usage error: Must specify one of the -t or -e options. Plz find below for proper usage')
+		usage()
+
+	access_check_list = [
+		("gdb", gdb_path),
+		("nm", nm_path),
+		("readelf", readelf_path)
+	]
+
+	exist_check_list = [
+		("dump_file", dump_file),
+		("log_file", log_file),
+		("elf", elf)
+	] + access_check_list
+
+	for name, path in exist_check_list:
+		if path and not os.path.exists(path):
+			print(f"{path} does not exist. Please provide the proper path for {name}...")
+			sys.exit(1)
+
+	for name, path in access_check_list:
+		if not os.access(path, os.X_OK):
+			print(f"!!! No execute permissions on {name} path {path}")
+			print("!!! Please check the path settings")
+			print("!!! If this tool is being run from a shared location, contact the maintainer")
+			sys.exit(1)
+
+	# Format log file if timestamp is present at the start of each line
+	format_log_file(log_file)
+
 	# Get the number of application binaries, names, text address and sizes
 	find_number_of_binaries(log_file)
 
@@ -843,55 +937,6 @@ def main():
 	data = fd.read()
 	fd.close()
 
-	if log_file is not None:
-		if not os.path.exists(log_file):
-			print('{0} does not exist. Please provide the proper path for log_file...'.format(log_file))
-			sys.exit(1)
-
-	if dump_file is not None:
-		if not os.path.exists(dump_file):
-			print('{0} does not exist. Plz provide proper path for dump_file...'.format(dump_file))
-			sys.exit(1)
-
-	if not log_file and not dump_file:
-		print('Usage error: Must specify one of the -t or -e options. Plz find below for proper usage')
-		usage()
-
-	if not os.path.exists(elf):
-		print('{0} does not exist. Cannot proceed without System.map Exiting...'.format(elf))
-		sys.exit(1)
-
-	if not os.path.exists(gdb_path):
-		print('{0} does not exist. Cannot proceed without GDB Tool Exiting...'.format(gdb_path))
-		sys.exit(1)
-
-	if not os.access(gdb_path, os.X_OK):
-		print("!!! No execute permissions on gdb path {0}".format(gdb_path))
-		print("!!! Please check the path settings")
-		print("!!! If this tool is being run from a shared location, contact the maintainer")
-		sys.exit(1)
-
-	if not os.path.exists(nm_path):
-		print('{0} does not exist. Cannot proceed without NM Tool Exiting...'.format(nm_path))
-		sys.exit(1)
-
-	if not os.access(nm_path, os.X_OK):
-		print("!!! No execute permissions on gdb path {0}".format(nm_path))
-		print("!!! Please check the path settings")
-		print("!!! If this tool is being run from a shared location, contact the maintainer")
-		sys.exit(1)
-
-	if not os.path.exists(readelf_path):
-		print('{0} does not exist. Cannot proceed without readelf Tool Exiting...'.format(readelf_path))
-		sys.exit(1)
-
-	if not os.access(readelf_path, os.X_OK):
-		print("!!! No execute permissions on readelf path {0}".format(readelf_path))
-		print("!!! Please check the path settings")
-		print("!!! If this tool is being run from a shared location, contact the maintainer")
-		sys.exit(1)
-
-
 	try:
 		if 'CONFIG_ARCH_HAVE_RAM_KERNEL_TEXT=y' in data:
 			have_ram_kernel_text = True
@@ -914,13 +959,8 @@ def main():
 			global g_etext_ram
 			g_etext_ram = rParser.get_address_of_symbol("_etext_ram")
 
-		if 'CONFIG_BOARD_CRASHDUMP=y' in data:
-			if ((dump_file != None) and (log_file != None)):
-				# Find the point of crash in the kernel, application or common binaries
-				find_crash_point(log_file, elf)
-		else:
-				find_crash_point(log_file, elf)
-
+		# Find the point of crash in the kernel, application or common binaries
+		find_crash_point(log_file, elf)
 
 		# Get ARM arch family
 		if ('CONFIG_ARCH_FAMILY="armv8-m"' in data) or ('CONFIG_ARCH_FAMILY="armv7-m"' in data):
